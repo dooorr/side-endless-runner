@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>横版无尽跑酷</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>横版无尽跑酷</h1>
+    <p class="subtitle">HTML5 Canvas</p>
+  </header>
+  <main class="main-column">
+    <div class="canvas-wrap">
+      <canvas id="game" width="1280" height="400" tabindex="0"></canvas>
+      <button id="pause-btn" class="pause-btn pause-btn--icon" type="button" hidden aria-label="暂停" title="暂停"></button>
+      <div id="pause-panel" class="pause-overlay" hidden>
+        <p class="pause-overlay-title">已暂停</p>
+        <div class="pause-actions">
+          <button id="pause-resume-btn" class="pause-action-btn pause-action-btn--icon pause-action-btn--primary" type="button" aria-label="继续" title="继续"></button>
+          <button id="pause-quit-btn" class="pause-action-btn pause-action-btn--icon" type="button" aria-label="终止本局" title="终止本局"></button>
+        </div>
+        <p class="pause-overlay-hint"><kbd>Esc</kbd> 继续 · <span class="pause-icon-inline" aria-hidden="true">■</span> 终止本局</p>
+      </div>
+    </div>
+
+    <div id="start-panel" class="panel start-panel">
+      <p class="panel-title">准备出发</p>
+      <p class="panel-hint">先点击游戏画面，再按 <kbd>空格</kbd> 或 <strong>鼠标左键</strong> 开始</p>
+      <ul class="help-list">
+        <li><kbd>空格</kbd> / 左键：跳跃（空中可 <strong>二段跳</strong>）</li>
+        <li><kbd>Shift</kbd>：<strong>冲刺</strong> — 猫身前移、残影光效、短暂无敌穿障（左下冷却条）</li>
+        <li>地形：<strong>高台须跳上去</strong>；<strong>深坑</strong>跳过否则坠落；从高台缘落下呈弧线</li>
+        <li>障碍：<strong>墓碑 / 尖刺</strong>在地面 — 跳或躲；<strong>蝙蝠</strong>在头顶低空飞 — <kbd>C</kbd> / 右键<strong>下蹲</strong>钻过去（跳过不去）</li>
+        <li>收集：金币 +分、猫爪高分、魔法护盾；躲开红色诅咒物</li>
+        <li>皮肤：<kbd>1</kbd> 黄昏 <kbd>2</kbd> 红月 <kbd>3</kbd> 午夜，<kbd>T</kbd> 轮换（当前：<span id="theme-name">黄昏</span>）</li>
+        <li>游戏中：<kbd>Esc</kbd> 或右上角 <strong>暂停</strong> — 可继续或终止本局</li>
+      </ul>
+    </div>
+
+    <div id="gameover-panel" class="panel gameover-panel" hidden>
+      <p class="panel-title">夜已尽</p>
+      <p class="go-score-line">本局得分 <span id="go-score" class="go-score">0</span></p>
+      <p id="go-record" class="go-record"></p>
+      <p id="go-death-reason" class="go-death-reason" hidden></p>
+      <p id="go-run-stats" class="go-run-stats" hidden></p>
+      <p class="panel-hint">按 <kbd>R</kbd> 或点击画面返回开始界面</p>
+    </div>
+  </main>
+  <footer class="footer">
+    <span id="high-score-label">最高分：0</span>
+    <div id="leaderboard-panel" class="leaderboard-panel"></div>
+  </footer>
+  <script src="js/config.js"></script>
+  <script src="js/difficulty.js"></script>
+  <script src="js/themes.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="js/collectibles.js"></script>
+  <script src="js/effects.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/platforms.js"></script>
+  <script src="js/bat-sprites.js"></script>
+  <script src="js/obstacles.js"></script>
+  <script src="js/cat-sprites.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
