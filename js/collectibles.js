@@ -136,18 +136,29 @@
       if (g.incrementCollect) g.incrementCollect(item.subtype);
       switch (item.subtype) {
         case "coin":
-          g.score += CONFIG.coinScore;
-          g.scorePopTimer = CONFIG.scorePopDuration;
+          if (g.registerComboPickup) g.registerComboPickup();
+          if (g.applyScoreBonus) g.applyScoreBonus(CONFIG.coinScore);
+          else {
+            g.score += CONFIG.coinScore;
+            g.scorePopTimer = CONFIG.scorePopDuration;
+          }
           break;
         case "paw":
-          g.score += CONFIG.pawScore;
-          g.scorePopTimer = CONFIG.scorePopDuration * 1.2;
+          if (g.registerComboPickup) g.registerComboPickup();
+          if (g.applyScoreBonus) g.applyScoreBonus(CONFIG.pawScore, 1.2);
+          else {
+            g.score += CONFIG.pawScore;
+            g.scorePopTimer = CONFIG.scorePopDuration * 1.2;
+          }
           break;
         case "magic":
-          g.score += CONFIG.magicScore;
+          if (g.registerComboPickup) g.registerComboPickup();
+          if (g.applyScoreBonus) g.applyScoreBonus(CONFIG.magicScore);
+          else g.score += CONFIG.magicScore;
           SideRunner.player.grantMagicBuff();
           break;
         case "curse":
+          if (g.breakCombo) g.breakCombo();
           g.score = Math.max(0, g.score - CONFIG.trapScorePenalty);
           g.curseTimer = CONFIG.curseDuration;
           SideRunner.effects.triggerCollisionFlash(

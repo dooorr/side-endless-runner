@@ -17,6 +17,7 @@
   <main class="main-column">
     <div class="canvas-wrap">
       <canvas id="game" width="1280" height="400" tabindex="0"></canvas>
+      <button id="mute-btn" class="pause-btn pause-btn--icon mute-btn" type="button" aria-label="静音" title="静音 (M)"></button>
       <button id="pause-btn" class="pause-btn pause-btn--icon" type="button" hidden aria-label="暂停" title="暂停"></button>
       <div id="pause-panel" class="pause-overlay" hidden>
         <p class="pause-overlay-title">已暂停</p>
@@ -25,6 +26,11 @@
           <button id="pause-quit-btn" class="pause-action-btn pause-action-btn--icon" type="button" aria-label="终止本局" title="终止本局"></button>
         </div>
         <p class="pause-overlay-hint"><kbd>Esc</kbd> 继续 · <span class="pause-icon-inline" aria-hidden="true">■</span> 终止本局</p>
+      </div>
+      <div id="touch-controls" class="touch-controls" hidden>
+        <button id="touch-duck" class="touch-btn" type="button" aria-label="下蹲">蹲</button>
+        <button id="touch-jump" class="touch-btn touch-btn--primary" type="button" aria-label="跳跃">跳</button>
+        <button id="touch-dash" class="touch-btn" type="button" aria-label="冲刺">冲</button>
       </div>
     </div>
 
@@ -36,9 +42,10 @@
         <li><kbd>Shift</kbd>：<strong>冲刺</strong> — 猫身前移、残影光效、短暂无敌穿障（左下冷却条）</li>
         <li>地形：<strong>高台须跳上去</strong>；<strong>深坑</strong>跳过否则坠落；从高台缘落下呈弧线</li>
         <li>障碍：<strong>墓碑 / 尖刺</strong>在地面 — 跳或躲；<strong>蝙蝠</strong>在头顶低空飞 — <kbd>C</kbd> / 右键<strong>下蹲</strong>钻过去（跳过不去）</li>
-        <li>收集：金币 +分、猫爪高分、魔法护盾；躲开红色诅咒物</li>
+        <li>收集：金币 +分、猫爪高分、魔法护盾；躲开红色诅咒物；<strong>连续拾取触发连击倍率</strong></li>
         <li>皮肤：<kbd>1</kbd> 黄昏 <kbd>2</kbd> 红月 <kbd>3</kbd> 午夜，<kbd>T</kbd> 轮换（当前：<span id="theme-name">黄昏</span>）</li>
-        <li>游戏中：<kbd>Esc</kbd> 或右上角 <strong>暂停</strong> — 可继续或终止本局</li>
+        <li>游戏中：<kbd>Esc</kbd> 或右上角 <strong>暂停</strong> — 可继续或终止本局；<kbd>M</kbd> 静音</li>
+        <li>手机 / 平板：画布下方显示 <strong>跳 / 蹲 / 冲</strong> 触控按钮</li>
       </ul>
     </div>
 
@@ -48,6 +55,7 @@
       <p id="go-record" class="go-record"></p>
       <p id="go-death-reason" class="go-death-reason" hidden></p>
       <p id="go-run-stats" class="go-run-stats" hidden></p>
+      <p id="go-achievements" class="go-achievements" hidden></p>
       <p class="panel-hint">按 <kbd>R</kbd> 或点击画面返回开始界面</p>
     </div>
   </main>
@@ -59,6 +67,7 @@
   <script src="js/difficulty.js"></script>
   <script src="js/themes.js"></script>
   <script src="js/leaderboard.js"></script>
+  <script src="js/achievements.js"></script>
   <script src="js/collectibles.js"></script>
   <script src="js/effects.js"></script>
   <script src="js/audio.js"></script>
@@ -70,6 +79,7 @@
   <script src="js/render.js"></script>
   <script src="js/input.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/touch.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

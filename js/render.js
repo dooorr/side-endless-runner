@@ -445,6 +445,30 @@
       ctx.fillText(scoreText, 0, 0);
       ctx.restore();
 
+      if (g.newRecordActive) {
+        const pulse = 0.75 + 0.25 * Math.sin(g.animFrame * 8);
+        ctx.save();
+        ctx.globalAlpha = pulse;
+        ctx.font = `bold ${S(11)}px Courier New, monospace`;
+        ctx.fillStyle = "#e8c878";
+        ctx.fillText("新纪录!", S(12), S(48));
+        ctx.restore();
+      }
+
+      if (g.comboCount > 0) {
+        const comboPulse = 0.85 + 0.15 * Math.sin(g.animFrame * 10);
+        ctx.save();
+        ctx.globalAlpha = comboPulse;
+        ctx.font = `${S(10)}px Courier New, monospace`;
+        ctx.fillStyle = g.comboMultiplier >= 2 ? "#e8c878" : "#b8a8c8";
+        const multText =
+          g.comboMultiplier > 1
+            ? `连击 ${g.comboCount} · x${g.comboMultiplier.toFixed(1)}`
+            : `连击 ${g.comboCount}`;
+        ctx.fillText(multText, S(12), S(g.newRecordActive ? 62 : 48));
+        ctx.restore();
+      }
+
       if (SideRunner.difficulty.getSpawnParams(g.score).inWarmUp) {
         ctx.font = `${S(10)}px Courier New, monospace`;
         ctx.fillStyle = theme.catOutline;

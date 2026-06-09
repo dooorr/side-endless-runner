@@ -13,6 +13,26 @@
   let bgmTimer = null;
   let bgmStep = 0;
   let bgmPlaying = false;
+  let muted = false;
+
+  function loadMutedPref() {
+    try {
+      muted = localStorage.getItem(CONFIG.MUTE_KEY) === "1";
+    } catch {
+      muted = false;
+    }
+  }
+
+  function applyMuteGain() {
+    if (!masterGain || !audioCtx) return;
+    masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+    masterGain.gain.setValueAtTime(
+      muted ? 0 : CONFIG.audioMasterVolume,
+      audioCtx.currentTime
+    );
+  }
+
+  loadMutedPref();
 
   const BGM_NOTES = [220, 261.63, 329.63, 392, 440, 523.25];
 
@@ -22,7 +42,7 @@
       if (!Ctx) return false;
       audioCtx = new Ctx();
       masterGain = audioCtx.createGain();
-      masterGain.gain.value = CONFIG.audioMasterVolume;
+      masterGain.gain.value = muted ? 0 : CONFIG.audioMasterVolume;
       masterGain.connect(audioCtx.destination);
 
       sfxGain = audioCtx.createGain();
@@ -37,6 +57,25 @@
   }
 
   SideRunner.audio = {
+    isMuted() {
+      return muted;
+    },
+
+    toggleMute() {
+      muted = !muted;
+      try {
+        localStorage.setItem(CONFIG.MUTE_KEY, muted ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      applyMuteGain();
+      if (muted) SideRunner.audio.stopBgm();
+      else if (SideRunner.game && SideRunner.game.state === SideRunner.State.PLAYING) {
+        SideRunner.audio.startBgm();
+      }
+      return muted;
+    },
+
     unlock() {
       if (!ensureContext()) return;
       if (unlocked) return;

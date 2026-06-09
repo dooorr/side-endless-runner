@@ -9,12 +9,13 @@
     duckHeld: false,
     jumpBufferTime: 0,
     duckFromMouse: false,
+    duckFromTouch: false,
     keyCHeld: false,
   };
 
   function syncDuckHeld() {
     const input = SideRunner.input;
-    input.duckHeld = input.keyCHeld || input.duckFromMouse;
+    input.duckHeld = input.keyCHeld || input.duckFromMouse || input.duckFromTouch;
   }
 
   function resetInput() {
@@ -22,7 +23,13 @@
     input.duckHeld = false;
     input.jumpBufferTime = 0;
     input.duckFromMouse = false;
+    input.duckFromTouch = false;
     input.keyCHeld = false;
+  }
+
+  function setTouchDuck(on) {
+    SideRunner.input.duckFromTouch = on;
+    syncDuckHeld();
   }
 
   function setKeyCHeld(on) {
@@ -63,6 +70,7 @@
 
   SideRunner.inputModule = {
     resetInput,
+    setTouchDuck,
     init(canvas) {
       const game = SideRunner.game;
 
@@ -94,6 +102,13 @@
         if (e.code === "KeyP" && game.state === State.PLAYING) {
           e.preventDefault();
           game.pauseGame();
+        }
+        if (e.code === "KeyM") {
+          e.preventDefault();
+          if (SideRunner.audio) {
+            SideRunner.audio.toggleMute();
+            if (SideRunner.ui) SideRunner.ui.syncMuteButton();
+          }
         }
       });
 

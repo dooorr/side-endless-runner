@@ -11,6 +11,7 @@
   const pauseBtn = document.getElementById("pause-btn");
   const pauseResumeBtn = document.getElementById("pause-resume-btn");
   const pauseQuitBtn = document.getElementById("pause-quit-btn");
+  const muteBtn = document.getElementById("mute-btn");
   const themeNameEl = document.getElementById("theme-name");
   const goScoreEl = document.getElementById("go-score");
   const goRecordEl = document.getElementById("go-record");
@@ -29,8 +30,33 @@
     '<svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true">' +
     '<rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor"/>' +
     "</svg>";
+  const ICON_MUTE_ON =
+    '<svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+    '<path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/>' +
+    '<path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>' +
+    "</svg>";
+  const ICON_MUTE_OFF =
+    '<svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+    '<path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/>' +
+    '<path d="M15 8a5 5 0 010 8M17 6a8 8 0 010 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+    "</svg>";
 
   let pauseControlsBound = false;
+  let muteControlBound = false;
+
+  function bindMuteControl() {
+    if (muteControlBound || !muteBtn) return;
+    muteControlBound = true;
+    muteBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (SideRunner.audio) {
+        SideRunner.audio.toggleMute();
+        SideRunner.ui.syncMuteButton();
+      }
+    });
+    SideRunner.ui.syncMuteButton();
+  }
 
   function bindPauseControls() {
     if (pauseControlsBound) return;
@@ -78,10 +104,21 @@
   SideRunner.ui = {
     initPauseControls() {
       bindPauseControls();
+      bindMuteControl();
+    },
+
+    syncMuteButton() {
+      if (!muteBtn || !SideRunner.audio) return;
+      const muted = SideRunner.audio.isMuted();
+      muteBtn.innerHTML = muted ? ICON_MUTE_ON : ICON_MUTE_OFF;
+      muteBtn.setAttribute("aria-label", muted ? "取消静音" : "静音");
+      muteBtn.title = muted ? "取消静音 (M)" : "静音 (M)";
+      muteBtn.classList.toggle("mute-btn--active", muted);
     },
 
     sync(state) {
       bindPauseControls();
+      bindMuteControl();
       const canvas = document.getElementById("game");
       if (canvas) {
         canvas.style.pointerEvents =
@@ -99,12 +136,13 @@
       if (pauseBtn) {
         pauseBtn.hidden = state !== State.PLAYING;
       }
+      if (SideRunner.touch) SideRunner.touch.syncVisibility();
       if (themeNameEl && SideRunner.themes) {
         themeNameEl.textContent = SideRunner.themes.getCurrentName();
       }
     },
 
-    showGameOver(score, highScore, onTop5) {
+    showGameOver(score, highScore, onTop5, deathReason, runStats, newlyUnlocked) {
       if (goScoreEl) goScoreEl.textContent = String(Math.floor(score));
       if (goRecordEl) {
         if (onTop5 && score > 0) {
@@ -135,18 +173,36 @@
 
       // 本局统计摘要（直接从 game 对象读取）
       const statsEl = document.getElementById("go-run-stats");
-      const runStats = g.runStats;
-      if (statsEl && runStats) {
-        const s = runStats;
+      const rs = g.runStats;
+      if (statsEl && rs) {
+        const s = rs;
         const lines = [
           `存活 ${Math.floor(s.playSeconds)}s · 最高 ${s.maxTier} 档`,
           `金币 ${s.coins} · 猫爪 ${s.paws} · 魔法 ${s.magic} · 诅咒 ${s.curses}`,
         ];
         if (s.dashCount > 0) lines.push(`冲刺 ${s.dashCount} 次`);
+        if (s.maxCombo > 1) lines.push(`最高连击 ${s.maxCombo}`);
         statsEl.innerHTML = lines.map((l) => `<span>${l}</span>`).join("<br>");
         statsEl.hidden = false;
       } else if (statsEl) {
         statsEl.hidden = true;
+      }
+
+      // 本次解锁的成就
+      const achEl = document.getElementById("go-achievements");
+      if (achEl) {
+        if (newlyUnlocked && newlyUnlocked.length > 0) {
+          const html = newlyUnlocked
+            .map(
+              (a) =>
+                `<span class="ach-badge"><span class="ach-icon">${a.icon}</span> ${a.name}</span>`
+            )
+            .join("");
+          achEl.innerHTML = `新成就：<br>${html}`;
+          achEl.hidden = false;
+        } else {
+          achEl.hidden = true;
+        }
       }
 
       SideRunner.ui.sync(State.GAME_OVER);

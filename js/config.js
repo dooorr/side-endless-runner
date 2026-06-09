@@ -137,6 +137,14 @@
 
     /** 地面障碍 / 收集物相对 viewScale 的额外放大 */
     itemScale: 1.12,
+
+    /** 连击：连续拾取加分倍率，诅咒清零 */
+    comboDecaySeconds: 4.5,
+    comboStepBonus: 0.12,
+    comboMaxMultiplier: 3,
+
+    /** 静音偏好 localStorage 键 */
+    MUTE_KEY: "sideRunnerMuted",
   };
 
   SideRunner.State = {
