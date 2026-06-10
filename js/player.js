@@ -305,6 +305,16 @@
       const g = SideRunner.game;
       if (g.state !== State.PLAYING) return;
 
+      if (!Number.isFinite(player.y)) {
+        player.y = playerGroundY();
+        if (!Number.isFinite(player.y)) {
+          player.y = CONFIG.groundY - playerHeight();
+        }
+        player.vy = 0;
+        player.onGround = true;
+        clearLedgeFall();
+      }
+
       if (dashCooldownLeft > 0) dashCooldownLeft -= dt;
       if (dashTimer > 0) {
         dashTimer -= dt;
@@ -332,18 +342,11 @@
             startLedgeFall();
           }
         } else {
+          // 脚下有实心台面时直接贴合，勿用 targetTop 差值判「踩空」：
+          // 高台 → 平地时 targetTop 会变大，旧逻辑会误判为滑落并令角色持续下落（猫消失）。
           const targetTop = surface - playerHeight();
-          // 下蹲时 targetTop 会变大（身体压低），不能当成踩空滑落
-          const ledgeDrop =
-            CONFIG.ledgeSnapDownPx != null
-              ? CONFIG.ledgeSnapDownPx
-              : Math.round(6 * (CONFIG.viewScale || 1));
-          if (!player.ducking && targetTop > player.y + ledgeDrop) {
-            startLedgeFall();
-          } else {
-            player.y = targetTop;
-            doubleJumpUsed = false;
-          }
+          player.y = targetTop;
+          doubleJumpUsed = false;
         }
       } else {
         player.ducking = false;

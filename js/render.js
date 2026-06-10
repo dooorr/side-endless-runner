@@ -329,7 +329,9 @@
 
         if (SideRunner.player.isInvulnerable() && !SideRunner.player.isDashing()) {
           const flicker = Math.sin(g.animFrame * 24) > 0;
-          if (flicker) ctx.globalAlpha = 0.5;
+          ctx.globalAlpha = flicker ? 0.5 : 1;
+        } else {
+          ctx.globalAlpha = 1;
         }
 
         const w = player.ducking ? CONFIG.duckWidth : CONFIG.standWidth;
@@ -537,6 +539,8 @@
         ctx.globalAlpha = pulse;
         ctx.fillText("按空格或左键开始", CONFIG.canvasWidth / 2, S(122));
         ctx.textAlign = "left";
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
         return;
       }
 
