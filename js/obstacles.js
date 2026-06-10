@@ -11,14 +11,7 @@
   let airSpawnTimer = 2.0;
   let spawnParams = null;
 
-  function rectsOverlap(a, b) {
-    return (
-      a.x < b.x + b.w &&
-      a.x + a.w > b.x &&
-      a.y < b.y + b.h &&
-      a.y + a.h > b.y
-    );
-  }
+  const rectsOverlap = SideRunner.physics.rectsOverlap;
 
   function canSpawnAt(right, minGapPx) {
     let maxRight = 0;
@@ -184,7 +177,7 @@
       if (SideRunner.player.isInvulnerable()) return;
 
       for (const o of obstacles) {
-        const obsBox = { x: o.x + 2, y: o.y + 2, w: o.w - 4, h: o.h - 4 };
+        const obsBox = SideRunner.physics.insetHitbox(o, 2);
         if (!rectsOverlap(box, obsBox)) continue;
 
         const surface = solidSurfaceAt(SideRunner.player.feetX());

@@ -139,10 +139,14 @@
 
   function canJumpNow() {
     const g = SideRunner.game;
-    if (g.state !== State.PLAYING || player.ducking || dashTimer > 0) return false;
-    if (player.onGround || coyoteTimeLeft > 0) return true;
-    if (!player.onGround && !doubleJumpUsed) return true;
-    return false;
+    return SideRunner.physics.canJumpNow({
+      playing: g.state === State.PLAYING,
+      ducking: player.ducking,
+      dashTimer,
+      onGround: player.onGround,
+      coyoteTimeLeft,
+      doubleJumpUsed,
+    });
   }
 
   function tryLandOnSurface() {
@@ -344,19 +348,25 @@
       } else {
         player.ducking = false;
         updateLedgeFallArc(dt);
-        if (player.wasOnGround) coyoteTimeLeft = CONFIG.coyoteTimeDuration;
-        if (coyoteTimeLeft > 0) coyoteTimeLeft -= dt;
+        coyoteTimeLeft = SideRunner.physics.stepCoyoteTime(
+          coyoteTimeLeft,
+          { wasOnGround: player.wasOnGround, onGround: player.onGround },
+          dt,
+          CONFIG.coyoteTimeDuration
+        );
       }
 
-      if (input.jumpBufferTime > 0) {
-        input.jumpBufferTime -= dt;
-        if (input.jumpBufferTime < 0) input.jumpBufferTime = 0;
-      }
+      input.jumpBufferTime = SideRunner.physics.stepJumpBuffer(input.jumpBufferTime, dt);
 
-      if (canJumpNow() && input.jumpBufferTime > 0) {
-        const isDouble = !player.onGround && coyoteTimeLeft <= 0;
-        if (isDouble) doubleJumpUsed = true;
-        performJump(isDouble);
+      const bufferedJump = SideRunner.physics.resolveBufferedJump({
+        canJump: canJumpNow(),
+        jumpBufferTime: input.jumpBufferTime,
+        onGround: player.onGround,
+        coyoteTimeLeft,
+      });
+      if (bufferedJump) {
+        if (bufferedJump.isDouble) doubleJumpUsed = true;
+        performJump(bufferedJump.isDouble);
       }
 
       if (!player.onGround) {
@@ -375,7 +385,7 @@
         }
       } else {
         player.runPhase += dt * 11;
-        coyoteTimeLeft = 0;
+        coyoteTimeLeft = SideRunner.physics.resetCoyoteOnGround();
         SideRunner.player.updateBlink(dt);
       }
     },

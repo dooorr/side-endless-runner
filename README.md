@@ -70,11 +70,21 @@ Chrome 小恐龙式横版无尽跑酷：哥特夜里小黑猫躲避墓碑、栅�
 - 页脚：历史最高分与 Top5 列表
 - 移动端：窄屏 / 触屏自动显示跳、蹲、冲触控按钮
 
+## 测试
+
+碰撞检测与跳跃物理（AABB、Coyote Time、Jump Buffer）抽成纯函数，用 Vitest 覆盖：
+
+```bash
+npm install
+npm test
+```
+
 ## 技术栈
 
 - HTML5 Canvas + 原生 JavaScript（15+ 模块，无框架）
 - Web Audio API（程序化音效）
 - IndexedDB + localStorage（排行榜、成就、偏好）
+- Vitest（碰撞 / 跳跃物理单元测试）
 - GitHub Pages 静态部署
 
 ## 文件结构
@@ -96,3 +106,5 @@ Chrome 小恐龙式横版无尽跑酷：哥特夜里小黑猫躲避墓碑、栅�
 | `js/ui.js` | 开始/结束面板 |
 | `js/touch.js` | 移动端触控 |
 | `js/config.js` | 游戏参数与状态枚举 |
+| `js/physics-utils.js` | AABB 碰撞、Coyote Time、跳跃缓冲纯函数 |
+| `tests/physics-utils.test.js` | Vitest 单元测试 |

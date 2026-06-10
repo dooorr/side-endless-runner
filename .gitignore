@@ -4,3 +4,4 @@ _build_cat48.py
 scripts/
 assets/
 Gemini_Generated_Image_*.png
+node_modules/

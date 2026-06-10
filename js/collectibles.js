@@ -9,14 +9,7 @@
   const items = [];
   let spawnTimer = 2.5;
 
-  function rectsOverlap(a, b) {
-    return (
-      a.x < b.x + b.w &&
-      a.x + a.w > b.x &&
-      a.y < b.y + b.h &&
-      a.y + a.h > b.y
-    );
-  }
+  const rectsOverlap = SideRunner.physics.rectsOverlap;
 
   function pickType(tier, trapChance) {
     const r = Math.random();
